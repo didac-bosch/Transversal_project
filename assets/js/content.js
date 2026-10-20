@@ -44,6 +44,27 @@ window.SITE = {
   /* Quest log: dated updates, newest first. */
   updates: [
     {
+      date: "2026-10-20",
+      category: "Media",
+      title: "Our flight on video",
+      text: "Activity 8 now has a video of our drone flying inside the DroneLab net, plus new photos: the drone powered on before the flight, a top view and another team photo with the drone.",
+      link: "#/world/1/activity/8"
+    },
+    {
+      date: "2026-10-20",
+      category: "Site",
+      title: "Close-ups, a better 3D model and the inventory in the warehouse",
+      text: "In the HANGAR, every component of the real photo now opens the official photo of that part, with its source. The 3D model is much more detailed (carbon plates, motor windings, wiring, propellers, the LiPo battery), has an exploded view and you can click its parts to identify them. The parts shop has closed: the kit inventory with where to buy and prices is now a tab inside the Unboxing warehouse (building 2).",
+      link: "#/world/1/hangar"
+    },
+    {
+      date: "2026-10-20",
+      category: "Site",
+      title: "New building: the HANGAR",
+      text: "Next to the DroneLab there is a new building with our real drone: a photo with clickable components (each one with the official photo of that part), a 3D model you can spin and a walk-around video. The labs also have a new SEE THE REAL ONE button that swaps the pixel art for a real photo.",
+      link: "#/world/1/hangar"
+    },
+    {
       date: "2026-10-18",
       category: "Media",
       title: "Photos, videos and flight results",
@@ -75,6 +96,7 @@ window.SITE = {
       date: "2026-09-10",
       tags: ["theory", "components"],
       done: true,
+      real: { src: "assets/img/hangar/drone.jpg", caption: "Our real drone: every component of this diagram, assembled" },
       objective: "<p>Get a global picture of a drone system before touching any hardware: how a quadcopter generates lift, stays stable, receives commands and talks to a ground control station.</p>",
       work: "<p>We studied the introductory material and the videos of the EETAC guide (see the links below) to understand how the drone works and how its components are related. To make it simpler, we split the system into five subsystems: power, propulsion, control, navigation and communication (see our diagram below).</p>" +
         "<p>The Hexsoon EDU 450 is a quadcopter with four brushless motors. By changing the speed of each motor, the drone can take off, land and move in roll, pitch and yaw. These are its main components:</p>" +
@@ -120,8 +142,10 @@ window.SITE = {
       date: "2026-09-10",
       tags: ["kit", "inventory"],
       done: true,
+      real: { src: "assets/img/w1/a2-kit.jpg", caption: "The real kit on our table" },
+      inventory: true,   // this building also shows the kit inventory (where to buy, price)
       objective: "<p>Check that the kit contains every component and tool needed for the assembly, and record its initial condition: the kit must be returned exactly as it was received.</p>",
-      work: "<p>We opened the Hexsoon EDU 450 kit and identified every component: frame parts, motors, ESCs, power distribution board, Orange Cube autopilot, FrSky radio transmitter and receiver, Here3 GPS and compass module, SiK telemetry radios, LiPo battery and the Raspberry Pi kit for phase 2 (open the box yourself in the OPEN THE BOX tab).</p>" +
+      work: "<p>We opened the Hexsoon EDU 450 kit and identified every component: frame parts, motors, ESCs, power distribution board, Orange Cube autopilot, FrSky radio transmitter and receiver, Here3 GPS and compass module, SiK telemetry radios, LiPo battery and the Raspberry Pi kit for phase 2 (open the box yourself in the OPEN THE BOX tab, and see where to buy each part and its price in the INVENTORY tab).</p>" +
         "<p>We sorted the components by function and by the activity in which we would need them. We paid special attention to the motors, ESCs, frame parts, power connections and autopilot, because they were needed in the first assembly sessions.</p>" +
         "<p>We also looked at the connectors and cables to understand how power and control signals travel through the aircraft, and we checked that the parts were in good condition before starting the assembly.</p>",
       media: [
@@ -140,6 +164,7 @@ window.SITE = {
       date: "2026-09-10",
       tags: ["assembly", "hardware"],
       done: true,
+      real: { src: "assets/img/w1/a3-frame.jpg", caption: "Our real frame: arms, motors and ESC wiring" },
       objective: "<p>Build the main body of the Hexsoon EDU450: motors on their mounts, arms, ESCs inside the arms, LED wiring and the power distribution board on the top plate, paying special attention to the position and spin direction (CW / CCW) of each motor.</p>",
       work: "<p>We started by preparing the four motors on their mounts. The front arms have <strong>orange</strong> supports and the rear arms <strong>black</strong> ones, so the orientation of the drone is easy to see.</p>" +
         "<p>The key point was putting every motor in the right position with the right spin direction: two motors turn clockwise and two counter-clockwise, and each one must match its propeller so that the drone produces the correct forces and stays stable. You can try it in the WORKBENCH tab.</p>" +
@@ -170,6 +195,7 @@ window.SITE = {
       date: "2026-09-16",
       tags: ["radio", "OpenTX", "PWM"],
       done: true,
+      real: { src: "assets/img/w1/a4-taranis-setup.jpg", caption: "Our real FrSky Taranis transmitter" },
       objective: "<p>Charge and calibrate the radio transmitter, create a model (roll, pitch, throttle and yaw on channels 1-4, switches on channels 5-7), bind it to the receiver and test the motors through the receiver PWM outputs.</p>",
       work: "<p>We worked with the <strong>FrSky Taranis</strong> transmitter and the receiver supplied with the kit. The transmitter sends the pilot's commands to the receiver by radio, and each channel carries one function: roll, pitch, throttle and yaw on channels 1-4, and the switches on the following channels.</p>" +
         "<p>Following the guide, we used <strong>OpenTX Companion</strong> to create a model for the transmitter, assign the channels, test the configuration and save it. Then we bound the transmitter to the receiver with the right radio protocol.</p>" +
@@ -194,6 +220,7 @@ window.SITE = {
       date: "2026-09-16",
       tags: ["autopilot", "Mission Planner", "calibration"],
       done: true,
+      real: { src: "assets/img/w1/a5-compass-config.jpg", caption: "Configuring the real autopilot in Mission Planner" },
       objective: "<p>Connect the receiver and the GPS to the Orange Cube autopilot, install Mission Planner and the ArduCopter firmware, set the initial parameters, calibrate accelerometer, compass and radio, and configure the flight modes.</p>",
       work: "<p>We connected the Orange Cube autopilot to Mission Planner. The autopilot reads the sensors and computes the signals that keep the drone stable. Following the guide, we installed the ArduCopter firmware, set the initial parameters and did the calibrations:</p>" +
         "<ul><li>Accelerometer calibration.</li><li>Compass calibration.</li><li>Radio calibration.</li><li>Flight mode configuration.</li></ul>" +
@@ -228,6 +255,7 @@ window.SITE = {
       date: "2026-09-17",
       tags: ["assembly", "wiring"],
       done: true,
+      real: { src: "assets/img/hangar/detail-cube.jpg", caption: "The real wiring: Orange Cube on its carrier board and the receiver" },
       objective: "<p>Finish the airframe: centre the autopilot on the top plate, connect receiver and power, connect the motors to the MAIN OUT ports and install the GPS, the telemetry radio and the battery straps.</p>",
       work: "<p>With the mechanical structure built, we installed the rest of the electronics (try it in the WIRING BENCH tab):</p>" +
         "<ul>" +
@@ -290,6 +318,7 @@ window.SITE = {
       date: "2026-09-19",
       tags: ["flight", "DroneLab", "geofence", "Loiter"],
       done: true,
+      real: { src: "assets/img/w1/a8-team.jpg", caption: "The real flight day: Group 3 at the DroneLab" },
       objective: "<p>Fly our drone in the DroneLab with the radio transmitter, inside a geofence, and check, as a complete system, all the work done during the assembly and configuration.</p>",
       work: "<p>This was the big milestone of Phase 1: the first time we could see the drone as a complete system, with the propulsion, the autopilot, the radio control and the navigation sensors working together.</p>" +
         "<p>Before the flight we set up a <strong>geofence</strong>: a virtual boundary around the flying area that the drone is not allowed to leave. If it reaches the fence, the autopilot stops it, so a mistake with the sticks can never take the drone out of the safe area.</p>" +
@@ -305,9 +334,13 @@ window.SITE = {
         "<tr><td>Ground station link</td><td>The telemetry link with Mission Planner stayed connected during the whole flight.</td></tr>" +
         "<tr><td>Warnings and reliability</td><td>No critical warnings and no failures.</td></tr>" +
         "</tbody></table></div>" +
-        "<p><strong>Result:</strong> the flight was a success, with a clean lift-off, a stable Loiter and a steady flight. Try it in the FLIGHT SIM tab: draw your own geofence first, then take off.</p>",
+        "<p><strong>Result:</strong> the flight was a success, with a clean lift-off, a stable Loiter and a steady flight. Watch it in the video below, and try it yourself in the FLIGHT SIM tab: draw your own geofence first, then take off.</p>",
       media: [
+        { type: "video", src: "assets/video/a8-flight.mp4", poster: "assets/img/w1/a8-flight-poster.jpg", caption: "Our drone flying inside the DroneLab net, with the pilot on the Taranis and Mission Planner on the laptop" },
+        { type: "img", src: "assets/img/w1/a8-powered.jpg", caption: "Powered on at the DroneLab, with the GPS status LED lit, ready for the pre-flight checks" },
+        { type: "img", src: "assets/img/w1/a8-top.jpg", caption: "Top view before the flight: acrylic plate, Orange Cube, Here3 GPS and the Taranis transmitter" },
         { type: "img", src: "assets/img/w1/a8-team.jpg", caption: "Group 3 at the DroneLab with our drone and the Taranis transmitter" },
+        { type: "img", src: "assets/img/w1/a8-team2.jpg", caption: "The four of us after the flight, with the drone and the transmitter" },
         { type: "img", src: "assets/img/w1/a8-ground-station.jpg", caption: "Working at the ground station laptop" }
       ],
       difficulties: "<p>No major problems in this activity: the drone took off, held its position and landed as expected.</p>",
@@ -319,6 +352,29 @@ window.SITE = {
       ]
     }
   ],
+
+  /* HANGAR: the real drone. Photo with hotspots (x / y in % of the photo),
+     a 3D model (hangar.js) and a short walk-around video. */
+  hangar: {
+    intro: "<p>Pixels are fun, but this is the real thing: the Hexsoon EDU 450 that we built, ready to fly (without propellers). Explore the photo, spin the 3D model or watch the walk-around video.</p>",
+    parts: "assets/img/hangar/parts/",
+    photo: { src: "assets/img/hangar/drone.jpg", alt: "Our Hexsoon EDU 450 quadcopter on a table, seen from the side" },
+    hotspots: [
+      { x: 61, y: 7,  part: "gps", img: "gps.jpg", credit: { text: "CubePilot Here3 product photo (IR-LOCK store)", url: "https://irlock.com/products/here3-with-istand" }, name: "Here3 GPS + compass", text: "Position and heading. It sits high on its mast, away from the power cables and motors that could disturb the compass." },
+      { x: 66, y: 26, part: "mast", img: "mast.jpg", credit: { text: "CubePilot Here3 with iStand product photo (BZB UAS), cropped", url: "https://www.bzbuas.com/shop/hx4-06213-here-3-with-istand-468" }, name: "GPS mast", text: "Lifts the GPS above the frame. Its orientation must match the autopilot settings." },
+      { x: 44, y: 25, part: "plate", img: "top-plate.jpg", credit: { text: "Hexsoon EDU-450, ArduPilot docs (CC BY-SA 3.0), cropped", url: "https://ardupilot.org/copter/docs/reference-frames-hexsoon-edu450.html" }, name: "Top plate (acrylic)", text: "Transparent plate that protects the autopilot and holds the GPS mast. Through it you can see the Orange Cube." },
+      { x: 51, y: 35, part: "cube", img: "cube.jpg", credit: { text: "The Cube Orange, ArduPilot docs (CC BY-SA 3.0), cropped", url: "https://ardupilot.org/copter/docs/common-thecubeorange-overview.html" }, name: "Orange Cube autopilot", text: "The flight controller running ArduCopter, on its carrier board: it reads the sensors and drives the four motors." },
+      { x: 42, y: 53, part: "telemetry", img: "telemetry.jpg", credit: { text: "Holybro SiK Telemetry Radio V3 product photo (holybro.com)", url: "https://holybro.com/collections/telemetry-radios/products/sik-telemetry-radio-v3" }, name: "SiK telemetry radio", text: "Holybro 433 MHz, 500 mW radio: the wireless link with Mission Planner on the laptop." },
+      { x: 37, y: 60, part: "xt60", img: "xt60.jpg", credit: { text: "AMASS XT60H connector product photo (Thingbits store)", url: "https://www.thingbits.in/products/amass-xt60h-male-female-connector" }, name: "XT60 battery lead", text: "Main power connector. The LiPo battery plugs in here, under the frame." },
+      { x: 50, y: 61, part: "frame", img: "frame-pdb.jpg", credit: { text: "Hexsoon EDU-450, ArduPilot docs (CC BY-SA 3.0), cropped", url: "https://ardupilot.org/copter/docs/reference-frames-hexsoon-edu450.html" }, name: "Central frame + PDB", text: "Carbon plates of the Hexsoon frame. The power distribution board between them feeds the ESCs and the autopilot through the red power wires." },
+      { x: 61, y: 53, part: "clamp", img: "clamp.jpg", credit: { text: "Hexsoon EDU-450 V2 product photo (World Drone Market), cropped", url: "https://www.worldronemarket.com/product/hexsoon-edu-450-drone-frame-v2/" }, name: "Arm clamp", text: "The orange blocks hold the carbon-tube arms to the central frame." },
+      { x: 77, y: 49, part: "receiver", img: "receiver.jpg", credit: { text: "FrSky Archer R8 PRO product photo (frsky-rc.com), cropped", url: "https://www.frsky-rc.com/archer-r8-pro/" }, name: "Radio receiver (FrSky Archer R8 PRO)", text: "FrSky Archer R8 PRO receiver, under the frame: it listens to the Taranis transmitter. The marker is on one of its two thin antennas." },
+      { x: 12, y: 44, part: "motor", img: "motor.jpg", credit: { text: "T-MOTOR AIR2216 II product photo (store.tmotor.com), cropped", url: "https://store.tmotor.com/goods.php?id=1220" }, name: "Brushless motor", text: "One of the four AIR 2216 motors. Each one has its own ESC and a fixed spin direction (CW or CCW)." },
+      { x: 84, y: 72, part: "mount", img: "front-mount.jpg", credit: { text: "Hexsoon EDU-450 V2 product photo (World Drone Market), cropped", url: "https://www.worldronemarket.com/product/hexsoon-edu-450-drone-frame-v2/" }, name: "Front arm (orange mount)", text: "Orange mounts mark the front arms, black ones the rear arms, so the orientation is visible from far away. The motor wires come out of the mount." },
+      { x: 14, y: 84, part: "leg", img: "leg.jpg", credit: { text: "Hexsoon EDU-450, ArduPilot docs (CC BY-SA 3.0), cropped", url: "https://ardupilot.org/copter/docs/reference-frames-hexsoon-edu450.html" }, name: "Landing leg", text: "Long carbon legs keep the frame and the battery clear of the ground at take-off and landing." }
+    ],
+    video: { src: "assets/video/hangar-walkaround.mp4", poster: "assets/img/hangar/poster.jpg", caption: "Walk-around of our drone, ready for its flight tests" }
+  },
 
   /* Inventory: kit components. Fill in "where" and "price". */
   kit: [
@@ -408,6 +464,9 @@ window.SITE = {
     { t: "ArduPilot Copter documentation", url: "https://ardupilot.org/copter/" },
     { t: "Mission Planner documentation", url: "https://ardupilot.org/planner/" },
     { t: "OpenTX", url: "https://www.open-tx.org/" },
+    { t: "Component photos in the HANGAR: official product photos from CubePilot, Holybro, FrSky, T-MOTOR, AMASS and Hexsoon (each one credited on its card)", url: "" },
+    { t: "Hexsoon EDU-450 and Cube Orange images: ArduPilot documentation (CC BY-SA 3.0)", url: "https://ardupilot.org/copter/docs/reference-frames-hexsoon-edu450.html" },
+    { t: "LiPo battery photo: Daniel van den Ouden, Wikimedia Commons (CC BY 2.0)", url: "https://commons.wikimedia.org/wiki/File:Lithium-polymer_battery_(3629206176).jpg" },
     { t: "Fonts: Press Start 2P and VT323 (Google Fonts, SIL Open Font License)", url: "https://fonts.google.com/" }
   ]
 };

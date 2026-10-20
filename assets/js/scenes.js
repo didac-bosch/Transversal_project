@@ -437,8 +437,8 @@ const World1 = {
     { id: 'a5', kind: 'act', n: 5, box: [326, 94, 74, 66], stop: [363, 168], face: 'up' },
     { id: 'a6', kind: 'act', n: 6, box: [192, 102, 70, 58], stop: [227, 168], face: 'up' },
     { id: 'a7', kind: 'act', n: 7, box: [94, 104, 64, 56], stop: [127, 168], face: 'up' },
-    { id: 'kit', kind: 'page', page: 'kit', name: 'PARTS SHOP: INVENTORY', box: [86, 182, 58, 42], stop: [115, 232], face: 'up' },
     { id: 'a8', kind: 'act', n: 8, box: [164, 178, 108, 46], stop: [218, 232], face: 'up' },
+    { id: 'hangar', kind: 'page', page: 'hangar', name: 'HANGAR: THE REAL DRONE', box: [298, 180, 62, 44], stop: [329, 232], face: 'up' },
     { id: 'gate', kind: 'gate', name: 'ROAD TO WORLD 2 (LOCKED)', box: [438, 190, 26, 42], stop: [440, 232], face: 'right' }
   ],
 
@@ -549,12 +549,12 @@ const World1 = {
       for (let x = 84; x <= 436; x += 8) { R(x - 1, 244, 4, 11, COL.out); R(x, 245, 2, 9, COL.wood); }
       // decorative trees
       [[374, 74], [398, 60], [392, 36], [30, 122, 1], [56, 148], [80, 124, 1], [30, 206], [46, 236, 1],
-        [380, 214], [404, 200, 1], [424, 216], [284, 214, 1], [168, 74, 1], [306, 196], [330, 212, 1], [354, 194], [358, 216]].sort((a, b) => a[1] - b[1])
+        [380, 214], [404, 200, 1], [424, 216], [284, 214, 1], [168, 74, 1], [98, 198], [124, 214, 1], [146, 196]].sort((a, b) => a[1] - b[1])
         .forEach(([x, y, v]) => drawTree(x, y, v));
       // buildings
       this.drawHome(); this.drawBoard();
       this.s1(); this.s2(); this.s3(); this.s4(); this.s5(); this.s6(); this.s7();
-      this.drawShop(); this.s8(); this.drawGate();
+      this.s8(); this.drawHangar(); this.drawGate();
       // forest border
       const edge = [];
       for (let x = -6; x <= W + 6; x += 12) { edge.push([x, 3]); edge.push([x + 6, H - 2]); }
@@ -651,12 +651,6 @@ const World1 = {
     R(137, 130, 15, 9, COL.out); R(138, 131, 12, 7, COL.metal); R(152, 133, 1, 3, COL.out);
     sign(127, 110, 'CALIB'); badge(100, 102, 7);
   },
-  drawShop() {
-    building(90, 186, 50, 38, { roof: '#3d9be0', roofD: '#2f7fc0', roofL: '#62b4ee', rh: 13 });
-    for (let i = 0; i < 13; i++) { const c = i % 2 ? COL.white : COL.red; R(89 + i * 4, 199, 4, 4, c); R(90 + i * 4, 203, 2, 1, c); }
-    windowAt(95, 208, 9, 7); windowAt(126, 208, 9, 7);
-    sign(115, 188, 'KIT');
-  },
   s8() { // FLIGHT TESTS - DroneLab
     R(165, 185, 106, 40, COL.out);
     R(166, 186, 104, 38, '#4e9e57');
@@ -667,6 +661,12 @@ const World1 = {
     for (const x of [166, 217, 268]) R(x, 180, 2, 45, '#6b6f80');
     R(166, 180, 104, 2, '#6b6f80');
     sign(218, 182, 'DRONELAB'); badge(171, 186, 8);
+  },
+  drawHangar() { // HANGAR - the real drone (photo, 3D model and video)
+    building(300, 184, 58, 40, { roof: '#3c7d8f', roofD: '#2f6474', roofL: '#5a9fb2', rh: 14, door: false, wall: '#d8dde6' });
+    R(309, 201, 40, 23, COL.out); R(310, 202, 38, 22, '#1d2230');
+    R(310, 220, 38, 2, '#2b3242');
+    sign(329, 186, 'HANGAR', '#e6f4ff');
   },
   drawGate() {
     R(446, 196, 4, 33, COL.out); R(447, 197, 2, 31, '#9aa0b0');
@@ -746,6 +746,13 @@ const World1 = {
     C.fillStyle = 'rgba(255,255,255,0.22)';
     for (let x = 170; x < 268; x += 6) C.fillRect(x, 182, 1, 42);
     for (let y = 188; y < 224; y += 6) C.fillRect(166, y, 104, 1);
+    // hangar - roll-up door going up and down, the real drone inside
+    drawDrone(329, 214, t, 1, false);
+    const door = Math.round(6 + (Math.sin(t * 0.8) * 0.5 + 0.5) * 6);
+    R(310, 202, 38, door, '#9aa3b5');
+    for (let y = 204; y < 202 + door; y += 3) R(310, y, 38, 1, '#7d879a');
+    R(310, 202 + door, 38, 1, COL.out);
+    exclaim(354, 172 + (Math.floor(t * 3) % 2));
     // gate flag
     R(449, 197, 11, 8, COL.out); R(450, 198, 9, 6, COL.red);
     if (Math.floor(t * 3) % 2) R(458, 199, 2, 3, COL.out);

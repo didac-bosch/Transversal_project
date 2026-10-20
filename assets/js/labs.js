@@ -11,15 +11,24 @@ const LW = 320, LH = 180;
 const Lab = {
   host: null, cv: null, ctx: null, w: null, raf: 0, last: 0, t: 0, fx: [],
 
-  mount(host, def) {
+  mount(host, def, real) {
     this.unmount();
     this.host = host;
     host.innerHTML = `
       <p class="lab-hint">${def.hint}</p>
-      <div class="lab-screen"><canvas class="lab-canvas" width="${LW}" height="${LH}" tabindex="0" aria-label="${esc(def.title)}"></canvas></div>
-      <div class="lab-bar"><div class="lab-ctrls"></div><div class="lab-progress"></div></div>
+      <div class="lab-screen"><canvas class="lab-canvas" width="${LW}" height="${LH}" tabindex="0" aria-label="${esc(def.title)}"></canvas>${real ? `
+        <figure class="lab-real" hidden><img src="${esc(real.src)}" alt="${esc(real.caption)}"><figcaption>${esc(real.caption)}</figcaption></figure>` : ''}</div>
+      <div class="lab-bar"><div class="lab-ctrls"></div>${real ? '<button class="btn real-btn" type="button" aria-pressed="false">SEE THE REAL ONE</button>' : ''}<div class="lab-progress"></div></div>
       <div class="lab-msg" aria-live="polite"></div>`;
     this.cv = host.querySelector('canvas');
+    // "see the real one": a real photo over the pixel lab (the lab keeps running underneath)
+    const realBtn = host.querySelector('.real-btn');
+    if (realBtn) realBtn.addEventListener('click', () => {
+      const fig = host.querySelector('.lab-real'), on = fig.hidden;
+      fig.hidden = !on; Snd.move();
+      realBtn.textContent = on ? 'BACK TO PIXELS' : 'SEE THE REAL ONE';
+      realBtn.setAttribute('aria-pressed', String(on)); realBtn.classList.toggle('on', on);
+    });
     this.ctx = this.cv.getContext('2d');
     this.ctx.imageSmoothingEnabled = false;
     this.fx = []; this.t = 0; this.last = 0;
@@ -459,7 +468,7 @@ LABS[2] = {
         const n = items.filter((i) => i.ok).length;
         if (n === items.length) {
           Snd.win();
-          Lab.say(`<b>Kit complete: ${n}/${n}</b> &#10004; Take photos of everything: the kit must be returned exactly as it was received!`, 'ok');
+          Lab.say(`<b>Kit complete: ${n}/${n}</b> &#10004; Take photos of everything: the kit must be returned exactly as it was received! Where to buy each part and its price: INVENTORY tab.`, 'ok');
         } else Lab.say(`<b>${it.n}. ${esc(it.name)}</b><br>${esc(it.contents)}`);
       },
       move(x, y) {

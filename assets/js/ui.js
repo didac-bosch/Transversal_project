@@ -15,7 +15,7 @@ function mediaHTML(list) {
   return '<div class="gallery">' + list.map((m) => {
     const cap = m.caption ? `<figcaption>${esc(m.caption)}</figcaption>` : '';
     if (m.type === 'youtube') return `<figure class="wide"><div class="yt"><iframe src="https://www.youtube-nocookie.com/embed/${esc(m.id)}" title="${esc(m.caption || 'Video')}" loading="lazy" allowfullscreen></iframe></div>${cap}</figure>`;
-    if (m.type === 'video') return `<figure class="wide"><video controls preload="metadata" src="${esc(m.src)}"></video>${cap}</figure>`;
+    if (m.type === 'video') return `<figure class="wide"><video controls preload="metadata" playsinline${m.poster ? ` poster="${esc(m.poster)}"` : ''} src="${esc(m.src)}"></video>${cap}</figure>`;
     return `<figure${m.wide ? ' class="wide"' : ''}><a href="${esc(m.src)}" target="_blank" rel="noopener"><img src="${esc(m.src)}" alt="${esc(m.caption || '')}" loading="lazy"></a>${cap}</figure>`;
   }).join('') + '</div>';
 }
@@ -26,6 +26,18 @@ function linksHTML(list) {
     : `<li>${esc(l.t)}</li>`)).join('') + '</ul>';
 }
 function tagsHTML(tags) { return (tags || []).map((t) => `<span class="tag">${esc(t)}</span>`).join(' '); }
+
+/* kit inventory (shown in the Unboxing building, activity 2) */
+function inventoryHTML() {
+  return `
+    <p>Every component of the kit we unboxed: what it does, where to buy it and its price.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Component</th><th>Function</th><th>Where to buy</th><th>Price</th></tr></thead>
+      <tbody>${SITE.kit.map((k) => `
+        <tr><td><b>${esc(k.item)}</b>${k.contents ? `<br><small>${esc(k.contents)}</small>` : ''}</td>
+        <td>${esc(k.fn)}</td><td>${k.where ? k.where : '<span class="q">???</span>'}</td><td>${k.price ? esc(k.price) : '<span class="q">???</span>'}</td></tr>`).join('')}
+      </tbody></table></div>`;
+}
 
 function activityBody(a) {
   return `
@@ -66,16 +78,6 @@ const PAGES = {
       el.querySelectorAll('[data-hero]').forEach((x) => { x.textContent = x.dataset.hero === Hero.current() ? 'PLAYING' : 'PLAY AS'; });
     }))
   },
-  kit: {
-    title: 'INVENTORY', sub: 'Kit components: function, where to buy and price',
-    body: () => `
-      <div class="table-wrap"><table>
-        <thead><tr><th>Component</th><th>Function</th><th>Where to buy</th><th>Price</th></tr></thead>
-        <tbody>${SITE.kit.map((k) => `
-          <tr><td><b>${esc(k.item)}</b>${k.contents ? `<br><small>${esc(k.contents)}</small>` : ''}</td>
-          <td>${esc(k.fn)}</td><td>${k.where ? k.where : '<span class="q">???</span>'}</td><td>${k.price ? esc(k.price) : '<span class="q">???</span>'}</td></tr>`).join('')}
-        </tbody></table></div>`
-  },
   troubles: {
     title: 'TROUBLESHOOTING', sub: 'Difficulties we found and how we solved them',
     body: () => (SITE.difficulties.length ? SITE.difficulties.map((d) => `
@@ -97,6 +99,11 @@ const PAGES = {
       <section><h3>Teamwork</h3>${fill(SITE.reflection.teamwork, 'how the team is working')}</section>
       <section><h3>What we will improve</h3>${fill(SITE.reflection.improvements, 'our improvement goals')}</section>`
   },
+  hangar: {
+    title: 'HANGAR', sub: 'Our real drone: photo, 3D model and video',
+    body: () => Hangar.body(),
+    after: (el) => Hangar.mount(el)
+  },
   library: {
     title: 'LIBRARY', sub: 'References, external material and glossary',
     body: () => `
@@ -114,8 +121,8 @@ const PAGES = {
 };
 
 const MENU = [
-  ['activities', 'ACTIVITIES'], ['log', 'QUEST LOG'], ['team', 'OUR TEAM'], ['kit', 'INVENTORY'],
-  ['troubles', 'TROUBLESHOOTING'], ['next', 'NEXT QUESTS'], ['journal', 'JOURNAL'], ['library', 'LIBRARY'],
+  ['activities', 'ACTIVITIES'], ['log', 'QUEST LOG'], ['team', 'OUR TEAM'], ['@inventory', 'INVENTORY'],
+  ['troubles', 'TROUBLESHOOTING'], ['next', 'NEXT QUESTS'], ['journal', 'JOURNAL'], ['library', 'LIBRARY'], ['hangar', 'HANGAR'],
   ['@select', 'CHANGE PILOT'], ['@classic', 'CLASSIC VIEW'], ['@worlds', 'WORLD MAP'], ['@close', 'CLOSE']
 ];
 
@@ -204,6 +211,12 @@ const UI = {
       Game.go(World1);
       crumbs.push(['WORLD MAP', '#/worlds'], [`WORLD ${w.id}`, `#/world/${w.id}`]);
       hint = 'ARROWS: WALK   ENTER: OPEN   CLICK A BUILDING   M: MENU';
+      if (parts[2] === 'kit') {                     // the inventory now lives in the Unboxing building
+        const inv = SITE.activities.find((x) => x.inventory);
+        this.forceTab = 'inventory';
+        location.replace(`#/world/1/activity/${inv.n}`);
+        return;
+      }
       if (parts[2] === 'activity') {
         const a = SITE.activities.find((x) => String(x.n) === parts[3]);
         if (a) { this.openActivity(a); crumbs.push([`ACTIVITY ${a.n}`, location.hash]); }
@@ -221,18 +234,20 @@ const UI = {
   },
   hideAll() {
     Lab.unmount();
+    Hangar.unmount();
     $('#overlay').hidden = true; $('#menuWrap').hidden = true; $('#classic').hidden = true;
     this.open = null; this.panelNav = null; this.tab = null;
   },
   leaveOverlay() { location.hash = '#/world/1'; },
 
   /* ---------- detail window ---------- */
-  showPanel({ badge, title, meta, body, prev, next, lab, after }) {
+  showPanel({ badge, title, meta, body, prev, next, lab, real, extra, after }) {
     const p = $('#panel');
     const tabs = lab ? `
       <div class="tabs" role="tablist">
         <button class="tab" role="tab" type="button" data-tab="lab" aria-selected="true">${esc(lab.tab)}</button>
         <button class="tab" role="tab" type="button" data-tab="report" aria-selected="false">REPORT</button>
+        ${extra ? `<button class="tab" role="tab" type="button" data-tab="${extra.id}" aria-selected="false">${esc(extra.label)}</button>` : ''}
       </div>` : '';
     p.innerHTML = `
       <div class="p-head">
@@ -240,7 +255,7 @@ const UI = {
         <button class="btn x" data-act="close" aria-label="Close">X</button>
       </div>
       ${tabs}
-      <div class="p-body">${lab ? `<div class="lab" data-pane="lab"></div><div class="report" data-pane="report" hidden>${body}</div>` : body}</div>
+      <div class="p-body">${lab ? `<div class="lab" data-pane="lab"></div><div class="report" data-pane="report" hidden>${body}</div>${extra ? `<div class="report" data-pane="${extra.id}" hidden>${extra.html}</div>` : ''}` : body}</div>
       <div class="p-foot">
         ${prev ? `<a class="btn" href="${prev[0]}">&lt; ${esc(prev[1])}</a>` : '<span></span>'}
         <a class="btn ghost" href="#/world/1">BACK TO MAP</a>
@@ -254,17 +269,21 @@ const UI = {
     p.focus();
     if (lab) {
       this.labDef = lab;
+      this.labReal = real || null;
       p.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => { Snd.move(); this.setTab(b.dataset.tab); }));
-      this.setTab(this.prefTab);
+      this.setTab(this.forceTab || this.prefTab);
+      this.forceTab = null;
     } else this.tab = null;
     after && after(p);
   },
   setTab(id) {
     const p = $('#panel');
-    this.tab = id; this.prefTab = id;
+    if (!p.querySelector(`.tab[data-tab="${id}"]`)) id = 'lab';     // e.g. INVENTORY only exists in activity 2
+    this.tab = id;
+    if (id === 'lab' || id === 'report') this.prefTab = id;
     p.querySelectorAll('.tab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === id)));
     p.querySelectorAll('[data-pane]').forEach((el) => { el.hidden = el.dataset.pane !== id; });
-    if (id === 'lab') Lab.mount(p.querySelector('[data-pane="lab"]'), this.labDef);
+    if (id === 'lab') Lab.mount(p.querySelector('[data-pane="lab"]'), this.labDef, this.labReal);
     else Lab.unmount();
     p.querySelector('.p-body').scrollTop = 0;
   },
@@ -277,6 +296,8 @@ const UI = {
       meta: `${a.date ? `<time datetime="${esc(a.date)}">${esc(a.date)}</time>` : '<span class="q">DATE ???</span>'} ${tagsHTML(a.tags)} ${a.done ? '<span class="tag done">DONE</span>' : ''}`,
       body: activityBody(a),
       lab: LABS[a.n],
+      real: a.real,
+      extra: a.inventory ? { id: 'inventory', label: 'INVENTORY', html: inventoryHTML() } : null,
       prev: pa ? [`#/world/1/activity/${pa.n}`, 'PREV'] : null,
       next: na ? [`#/world/1/activity/${na.n}`, 'NEXT'] : null
     });
@@ -305,6 +326,7 @@ const UI = {
     if (id === '@classic') { location.hash = '#/classic'; return; }
     if (id === '@worlds') { location.hash = '#/worlds'; return; }
     if (id === '@select') { location.hash = '#/select'; return; }
+    if (id === '@inventory') { location.hash = '#/world/1/kit'; return; }
     location.hash = `#/world/1/${id}`;
   },
 
@@ -322,6 +344,7 @@ const UI = {
           <p class="meta">${a.date ? esc(a.date) : '<span class="q">DATE ???</span>'} ${tagsHTML(a.tags)}</p>
           ${LABS[a.n] ? `<p class="c-lab">Hands-on version (${esc(LABS[a.n].tab.toLowerCase())}): <a href="#/world/1/activity/${a.n}">open building ${a.n} in the game</a>.</p>` : ''}
           ${activityBody(a)}
+          ${a.inventory ? `<section><h3>Kit inventory: where to buy and price</h3>${inventoryHTML()}</section>` : ''}
         </article>`).join('')}
       ${Object.entries(PAGES).filter(([k]) => k !== 'activities').map(([k, p]) => `
         <article id="c-${k}" class="c-sec"><h2>${esc(p.title)}</h2><p class="meta">${esc(p.sub)}</p>${p.body()}</article>`).join('')}`;
